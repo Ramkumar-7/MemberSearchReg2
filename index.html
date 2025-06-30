@@ -117,8 +117,8 @@
   <div class="container">
     <div class="step-container">
       <div class="step">Step 1</div>
-      <div class="step active">Step 2</div>
-      <div class="step">Step 3</div>
+      <div class="step active" id="step2">Step 2</div>
+      <div class="step" id="step3">Step 3</div>
     </div>
 
     <h2 style="color: #003366; font-weight: bold;">Personal Information</h2>
@@ -138,7 +138,6 @@
       <input type="submit" value="Submit">
     </form>
 
-    <!-- Step 3 Section -->
     <div id="stepThree" class="step-three">
       <h3>Active & Fit Member Validation</h3>
       <div id="statusMessage" class="status" style="display: none;"></div>
@@ -173,56 +172,54 @@
         if (!response.ok) throw new Error("Network error");
 
         const data = await response.json();
-        const eligibilityStatus = data.payload?.[0]?.eligibilityStatus;
-        if (!eligibilityStatus) throw new Error("Eligibility status missing");
+        console.log("API Response:", data);
 
-        // Show Step 3
-        const stepThreeSection = document.getElementById("stepThree");
+        const eligibilityStatus = data?.payload?.[0]?.eligibilityStatus || "Unavailable";
+
+        const stepThree = document.getElementById("stepThree");
         const statusDiv = document.getElementById("statusMessage");
         const continueBtn = document.getElementById("continueBtn");
 
-        stepThreeSection.style.display = "block";
-        stepThreeSection.scrollIntoView({ behavior: "smooth" });
+        stepThree.style.display = "block";
+        stepThree.scrollIntoView({ behavior: "smooth" });
 
-        // Step tracker switch
-        const steps = document.querySelectorAll(".step");
-        steps.forEach((step, index) => {
-          step.classList.remove("active");
-          if (index === 2) step.classList.add("active");
-        });
+        document.getElementById("step2").classList.remove("active");
+        document.getElementById("step3").classList.add("active");
 
         statusDiv.style.display = "block";
         statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         statusDiv.className = "status";
 
+        continueBtn.disabled = true;
+
         if (eligibilityStatus === "Active") {
           statusDiv.classList.add("active");
           continueBtn.disabled = false;
+        } else if (eligibilityStatus === "Inactive") {
+          statusDiv.classList.add("inactive");
+        } else if (eligibilityStatus === "Member not found") {
+          statusDiv.classList.add("not-found");
+        } else if (eligibilityStatus.includes("Multiple members")) {
+          statusDiv.classList.add("multiple-members");
         } else {
-          continueBtn.disabled = true;
-          if (eligibilityStatus === "Inactive") statusDiv.classList.add("inactive");
-          else if (eligibilityStatus === "Member not found") statusDiv.classList.add("not-found");
-          else if (eligibilityStatus.includes("Multiple members")) statusDiv.classList.add("multiple-members");
-          else statusDiv.classList.add("other");
+          statusDiv.classList.add("other");
         }
       } catch (error) {
+        console.error("Error:", error);
         alert("Something went wrong. Please try again.");
-        console.error(error);
-        const stepThreeSection = document.getElementById("stepThree");
+
+        const stepThree = document.getElementById("stepThree");
+        stepThree.style.display = "block";
+        stepThree.scrollIntoView({ behavior: "smooth" });
+
+        document.getElementById("step2").classList.remove("active");
+        document.getElementById("step3").classList.add("active");
+
         const statusDiv = document.getElementById("statusMessage");
-
-        stepThreeSection.style.display = "block";
-        stepThreeSection.scrollIntoView({ behavior: "smooth" });
-
-        const steps = document.querySelectorAll(".step");
-        steps.forEach((step, index) => {
-          step.classList.remove("active");
-          if (index === 2) step.classList.add("active");
-        });
-
         statusDiv.textContent = "Unable to retrieve eligibility.";
         statusDiv.className = "status other";
         statusDiv.style.display = "block";
+
         document.getElementById("continueBtn").disabled = true;
       }
     });
@@ -232,4 +229,8 @@
     });
 
     document.getElementById("continueBtn").addEventListener("click", () => {
-      window.open("https://www.activeandfitdirect.com/fitness/AF792146
+      window.open("https://www.activeandfitdirect.com/fitness/AF792146FA", "_blank");
+    });
+  </script>
+</body>
+</html>
