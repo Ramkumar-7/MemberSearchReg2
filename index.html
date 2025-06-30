@@ -194,6 +194,7 @@
 
         if (eligibilityStatus === "Active") {
           statusDiv.classList.add("active");
+          statusDiv.innerHTML = `<strong>🎉 Congratulations!</strong><br>You are Eligible for the Active&amp;Fit Direct program.<br>Please click the Continue button to transfer to the Active&amp;Fit Direct Site for registration.`;
           continueBtn.disabled = false;
         } else if (eligibilityStatus === "Inactive") {
           statusDiv.classList.add("inactive");
