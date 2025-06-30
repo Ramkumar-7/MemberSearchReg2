@@ -42,7 +42,6 @@
             background-color: #003366;
             color: white;
         }
-
         h2 {
             text-align: center;
             margin-bottom: 30px;
@@ -54,16 +53,26 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        input[type="submit"] {
-            width: 100%;
+        input[type="submit"],
+        button {
+            width: 48%;
             padding: 12px;
+            margin-top: 10px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
-        input[type="submit"]:hover {
+        button#cancelBtn {
+            background-color: #f44336;
+        }
+        button#continueBtn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        input[type="submit"]:hover,
+        button:hover:enabled {
             background-color: #45a049;
         }
         .required::after {
@@ -101,23 +110,27 @@
             margin: 0;
             z-index: 1;
         }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <img src="header_active-fit.png" alt="Top Left Logo" class="top-left-logo" />
-
     <div class="container">
-        <!-- Step Tracker -->
         <div class="step-container">
             <div class="step">Step 1</div>
             <div class="step active">Step 2</div>
         </div>
 
-<!--         <h2>Enter the details</h2> -->
         <h2 style="color: #003366; font-weight: bold; margin-bottom: 10px;">Personal Information</h2>
         <p style="color: #666; margin-bottom: 25px;">
-          Please enter below information to verify your FBHP member eligibility.
+            Please enter below information to verify your FBHP member eligibility.
         </p>
+
         <form id="dataForm">
             <label>Subscriber ID (optional)</label>
             <input type="text" id="subscriberId" minlength="9" maxlength="9"><br>
@@ -129,7 +142,13 @@
             <input type="date" id="dob" required><br>
             <input type="submit" value="Submit">
         </form>
+
         <div id="statusMessage" class="status" style="display:none;"></div>
+
+        <div class="button-group">
+            <button id="cancelBtn" type="button">Cancel</button>
+            <button id="continueBtn" type="button" disabled>Continue</button>
+        </div>
     </div>
 
     <script>
@@ -150,7 +169,7 @@
             }
 
             const apiUrl = `https://api-np.fbhp.com/fbhpweb-member-facets-eapi-uat/api/member/status?subscriberId=${subscriberId}&fname=${firstName}&lname=${lastName}&dob=${dob}`;
-    
+
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) throw new Error("Network response was not ok");
@@ -164,21 +183,36 @@
                 statusMessage.textContent = `Eligibility Status: ${eligibilityStatus}`;
                 statusMessage.className = "status";
 
+                const continueBtn = document.getElementById("continueBtn");
+
                 if (eligibilityStatus === "Active") {
                     statusMessage.classList.add("active");
-                } else if (eligibilityStatus === "Inactive") {
-                    statusMessage.classList.add("inactive");
-                } else if (eligibilityStatus === "Member not found") {
-                    statusMessage.classList.add("not-found");
-                } else if (eligibilityStatus.includes("Multiple members")) {
-                    statusMessage.classList.add("multiple-members");
+                    continueBtn.disabled = false;
                 } else {
-                    statusMessage.classList.add("other");
+                    if (eligibilityStatus === "Inactive") {
+                        statusMessage.classList.add("inactive");
+                    } else if (eligibilityStatus === "Member not found") {
+                        statusMessage.classList.add("not-found");
+                    } else if (eligibilityStatus.includes("Multiple members")) {
+                        statusMessage.classList.add("multiple-members");
+                    } else {
+                        statusMessage.classList.add("other");
+                    }
+                    continueBtn.disabled = true;
                 }
             } catch (error) {
                 alert("An error occurred while fetching the data. Please try again.");
                 console.error("Error:", error);
+                document.getElementById("continueBtn").disabled = true;
             }
+        });
+
+        document.getElementById("cancelBtn").addEventListener("click", () => {
+            location.reload();
+        });
+
+        document.getElementById("continueBtn").addEventListener("click", () => {
+            window.location.href = "https://www.activeandfitdirect.com/fitness/AF792146FA";
         });
     </script>
 </body>
