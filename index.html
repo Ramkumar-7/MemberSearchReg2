@@ -83,7 +83,6 @@
       border-radius: 4px;
       font-weight: bold;
       text-align: center;
-      line-height: 1.5;
     }
     .active { background-color: #4CAF50; color: white; }
     .inactive { background-color: #f44336; color: white; }
@@ -173,6 +172,8 @@
         if (!response.ok) throw new Error("Network error");
 
         const data = await response.json();
+        console.log("API Response:", data);
+
         const eligibilityStatus = data?.payload?.[0]?.eligibilityStatus || "Unavailable";
 
         const stepThree = document.getElementById("stepThree");
@@ -186,29 +187,26 @@
         document.getElementById("step3").classList.add("active");
 
         statusDiv.style.display = "block";
+        statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         statusDiv.className = "status";
+
         continueBtn.disabled = true;
 
         if (eligibilityStatus === "Active") {
           statusDiv.classList.add("active");
-          statusDiv.innerHTML = `<strong>🎉 Congratulations!</strong><br>You are Eligible for the Active&amp;Fit Direct program.<br>Please click the Continue button to transfer to the Active&amp;Fit Direct Site for registration.`;
           continueBtn.disabled = false;
         } else if (eligibilityStatus === "Inactive") {
           statusDiv.classList.add("inactive");
-          statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         } else if (eligibilityStatus === "Member not found") {
           statusDiv.classList.add("not-found");
-          statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         } else if (eligibilityStatus.includes("Multiple members")) {
           statusDiv.classList.add("multiple-members");
-          statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         } else {
           statusDiv.classList.add("other");
-          statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         }
       } catch (error) {
-        alert("Something went wrong. Please try again.");
         console.error("Error:", error);
+        alert("Something went wrong. Please try again.");
 
         const stepThree = document.getElementById("stepThree");
         stepThree.style.display = "block";
@@ -231,4 +229,8 @@
     });
 
     document.getElementById("continueBtn").addEventListener("click", () => {
-      window.open("https://www.activeandfitdirect.com/
+      window.open("https://www.activeandfitdirect.com/fitness/AF792146FA", "_blank");
+    });
+  </script>
+</body>
+</html>
