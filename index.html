@@ -44,6 +44,13 @@
       background-color: #003366;
       color: white;
     }
+    input[type="text"],
+    input[type="date"],
+    input[type="submit"],
+    button {
+      font-family: inherit;
+      font-size: 1em;
+    }
     input[type="text"], input[type="date"] {
       width: 95%;
       padding: 10px;
@@ -172,8 +179,6 @@
         if (!response.ok) throw new Error("Network error");
 
         const data = await response.json();
-        console.log("API Response:", data);
-
         const eligibilityStatus = data?.payload?.[0]?.eligibilityStatus || "Unavailable";
 
         const stepThree = document.getElementById("stepThree");
@@ -222,6 +227,14 @@
         statusDiv.style.display = "block";
 
         document.getElementById("continueBtn").disabled = true;
+      }
+    });
+
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+      location.reload();
+    });
+
+   document.getElementById("continueBtn").disabled = true;
       }
     });
 
