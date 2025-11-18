@@ -47,7 +47,7 @@
     input[type="text"],
     input[type="date"],
     input[type="submit"],
-    button {
+    a.btn {
       font-family: inherit;
       font-size: 1em;
     }
@@ -58,9 +58,8 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-    input[type="submit"],
-    button {
-      width: 48%;
+    input[type="submit"] {
+      width: 100%;
       padding: 12px;
       margin-top: 10px;
       background-color: #4CAF50;
@@ -69,15 +68,7 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    button#cancelBtn {
-      background-color: #f44336;
-    }
-    button#continueBtn:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    input[type="submit"]:hover,
-    button:hover:enabled {
+    input[type="submit"]:hover {
       background-color: #45a049;
     }
     .required::after {
@@ -106,6 +97,7 @@
       display: flex;
       justify-content: space-between;
       margin-top: 15px;
+      gap: 10px;
     }
     .step-three {
       display: none;
@@ -116,6 +108,39 @@
     .step-three h3 {
       color: #003366;
       margin-bottom: 10px;
+    }
+    /* Disabled link style */
+    a.disabled {
+      pointer-events: none;
+      background-color: #ccc !important;
+      color: #666 !important;
+      cursor: not-allowed;
+    }
+    /* Style for link buttons */
+    a.btn {
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: white;
+      width: 100%;
+    }
+    a.btn:hover:not(.disabled) {
+      background-color: #45a049;
+    }
+    #cancelBtn {
+      background-color: #f44336;
+      color: white;
+      padding: 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    #cancelBtn:hover {
+      background-color: #d32f2f;
     }
   </style>
 </head>
@@ -150,7 +175,11 @@
       <div id="statusMessage" class="status" style="display: none;"></div>
       <div class="button-group">
         <button id="cancelBtn" type="button">Cancel</button>
-        <button id="continueBtn" type="button" disabled>Continue</button>
+        <a class="btn disabled" id="continueBtn"
+           href="https://www.activeandfitdirect.com/fitness/AF792146FA"
+           target="_blank">
+          Continue
+        </a>
       </div>
     </div>
   </div>
@@ -197,12 +226,12 @@
         statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         statusDiv.className = "status";
 
-        continueBtn.disabled = true;
+        continueBtn.classList.add("disabled"); // default disabled
 
         if (eligibilityStatus === "Active") {
           statusDiv.classList.add("active");
           statusDiv.innerHTML = `<strong>🎉 Congratulations!</strong><br>You are Eligible for the Active&amp;Fit Direct program.<br>Please click the Continue button to transfer to the Active&amp;Fit Direct Site for registration.`;
-          continueBtn.disabled = false;
+          continueBtn.classList.remove("disabled"); // enable link
         } else if (eligibilityStatus === "Inactive") {
           statusDiv.classList.add("inactive");
         } else if (eligibilityStatus === "Member not found") {
@@ -212,7 +241,7 @@
         } else {
           statusDiv.classList.add("other");
         }
-      } catch (error) {
+            } catch (error) {
         console.error("Error:", error);
         alert("Something went wrong. Please try again.");
 
@@ -228,17 +257,14 @@
         statusDiv.className = "status other";
         statusDiv.style.display = "block";
 
-        document.getElementById("continueBtn").disabled = true;
+        const continueBtn = document.getElementById("continueBtn");
+        continueBtn.classList.add("disabled"); // keep disabled on error
       }
     });
 
     document.getElementById("cancelBtn").addEventListener("click", () => {
       location.reload();
     });
-
-   document.getElementById("continueBtn").addEventListener("click", () => {
-  window.location.href = "https://www.activeandfitdirect.com/fitness/AF792146FA";
-});
   </script>
 </body>
 </html>
