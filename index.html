@@ -47,7 +47,7 @@
     input[type="text"],
     input[type="date"],
     input[type="submit"],
-    button {
+    a.btn {
       font-family: inherit;
       font-size: 1em;
     }
@@ -59,26 +59,32 @@
       border-radius: 5px;
     }
     input[type="submit"],
-    button {
+    a.btn {
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
       width: 48%;
       padding: 12px;
       margin-top: 10px;
       background-color: #4CAF50;
       color: white;
-      border: none;
       border-radius: 4px;
       cursor: pointer;
     }
-    button#cancelBtn {
+    a#cancelBtn {
       background-color: #f44336;
     }
-    button#continueBtn:disabled {
+    a#continueBtn.disabled {
       background-color: #ccc;
+      pointer-events: none;
       cursor: not-allowed;
     }
     input[type="submit"]:hover,
-    button:hover:enabled {
+    a.btn:hover:not(.disabled) {
       background-color: #45a049;
+    }
+    a#cancelBtn:hover {
+      background-color: #d32f2f;
     }
     .required::after {
       content: " *";
@@ -91,11 +97,11 @@
       font-weight: bold;
       text-align: center;
     }
-    .active { background-color: #4CAF50; color: white; }
-    .inactive { background-color: #f44336; color: white; }
-    .not-found { background-color: #FF9800; color: black; }
-    .multiple-members { background-color: #FFFF00; color: black; }
-    .other { background-color: #FFC107; color: red; }
+    .status.active { background-color: #4CAF50; color: white; }
+    .status.inactive { background-color: #f44336; color: white; }
+    .status.not-found { background-color: #FF9800; color: black; }
+    .status.multiple-members { background-color: #FFFF00; color: black; }
+    .status.other { background-color: #FFC107; color: red; }
     .top-left-logo {
       position: absolute;
       top: 20px;
@@ -149,8 +155,14 @@
       <h3>Active & Fit Member Validation</h3>
       <div id="statusMessage" class="status" style="display: none;"></div>
       <div class="button-group">
-        <button id="cancelBtn" type="button">Cancel</button>
-        <button id="continueBtn" type="button" disabled>Continue</button>
+        <!-- Cancel as anchor -->
+        <a id="cancelBtn" class="btn" href="https://activeandfit.fbhealthplans.com/tzg/cws/registration/facetsRegistrationLogin.jsp?brand=ACTIVE-FIT">
+          Cancel
+        </a>
+        <!-- Continue as anchor -->
+        <a id="continueBtn" class="btn disabled" href="https://www.activeandfitdirect.com/fitness/AF792146FA" target="_blank">
+          Continue
+        </a>
       </div>
     </div>
   </div>
@@ -197,48 +209,19 @@
         statusDiv.textContent = `Eligibility Status: ${eligibilityStatus}`;
         statusDiv.className = "status";
 
-        continueBtn.disabled = true;
+        continueBtn.classList.add("disabled");
 
-        if (eligibilityStatus === "Active") {
+        if (eligibilityStatus.toLowerCase().trim() === "active") {
           statusDiv.classList.add("active");
           statusDiv.innerHTML = `<strong>🎉 Congratulations!</strong><br>You are Eligible for the Active&amp;Fit Direct program.<br>Please click the Continue button to transfer to the Active&amp;Fit Direct Site for registration.`;
-          continueBtn.disabled = false;
-        } else if (eligibilityStatus === "Inactive") {
+          continueBtn.classList.remove("disabled");
+        } else if (eligibilityStatus.toLowerCase().trim() === "inactive") {
           statusDiv.classList.add("inactive");
-        } else if (eligibilityStatus === "Member not found") {
+        } else if (eligibilityStatus.toLowerCase().includes("member not found")) {
           statusDiv.classList.add("not-found");
-        } else if (eligibilityStatus.includes("Multiple members")) {
+        } else if (eligibilityStatus.toLowerCase().includes("multiple members")) {
           statusDiv.classList.add("multiple-members");
         } else {
           statusDiv.classList.add("other");
         }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Something went wrong. Please try again.");
-
-        const stepThree = document.getElementById("stepThree");
-        stepThree.style.display = "block";
-        stepThree.scrollIntoView({ behavior: "smooth" });
-
-        document.getElementById("step2").classList.remove("active");
-        document.getElementById("step3").classList.add("active");
-
-        const statusDiv = document.getElementById("statusMessage");
-        statusDiv.textContent = "Unable to retrieve eligibility.";
-        statusDiv.className = "status other";
-        statusDiv.style.display = "block";
-
-        document.getElementById("continueBtn").disabled = true;
-      }
-    });
-
-    document.getElementById("cancelBtn").addEventListener("click", () => {
-      location.reload();
-    });
-
-   document.getElementById("continueBtn").addEventListener("click", () => {
-  window.location.href = "https://www.activeandfitdirect.com/fitness/AF792146FA";
-});
-  </script>
-</body>
-</html>
+      } catch (error)
